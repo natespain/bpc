@@ -1,0 +1,170 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Video with YouTube-style Play Button</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    /* Container positions overlay above the video */
+    .video-wrapper {
+      position: relative;
+      display: inline-block; /* shrink to video size */
+      line-height: 0;        /* remove gaps from inline-block */
+    }
+
+    .video-wrapper video {
+      display: block;
+      width: 640px;   /* set to your desired size or 100% */
+      height: auto;
+      background: #000; /* nice black background while loading */
+    }
+
+    /* Overlay covers the whole video area */
+    .video-overlay {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none; /* only the button itself is clickable */
+    }
+
+    /* The circular button */
+    .play-button {
+      pointer-events: auto;
+      width: 88px;
+      height: 88px;
+      border-radius: 50%;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(1px);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: transform 120ms ease, background 120ms ease;
+      border: 1px solid rgba(255,255,255,0.25);
+      outline: none;
+    }
+
+    .play-button:hover {
+      transform: scale(1.04);
+      background: rgba(0, 0, 0, 0.7);
+    }
+
+    .play-button:active {
+      transform: scale(0.98);
+    }
+
+    .play-button:focus-visible {
+      box-shadow: 0 0 0 3px rgba(0, 153, 255, 0.7);
+    }
+
+    /* The triangular "play" icon (CSS-only) */
+    .play-icon {
+      width: 0;
+      height: 0;
+      border-style: solid;
+      border-width: 16px 0 16px 28px; /* height: 32px, width: 28px */
+      border-color: transparent transparent transparent white;
+      margin-left: 4px; /* optical centering */
+    }
+
+    /* Hide overlay while playing */
+    .video-wrapper.is-playing .video-overlay {
+      display: none;
+    }
+
+    /* Optional: hide native controls until playing (customizable) */
+    .video-wrapper:not(.is-playing) video::-webkit-media-controls {
+      display: none !important;
+    }
+    .video-wrapper:not(.is-playing) video {
+      /* If you always want native controls visible, remove this block */
+    }
+  </style>
+</head>
+<body>
+  <div class="video-wrapper" id="myVideoWrapper">
+    <video id="myVideo" preload="metadata" poster="" playsinline>
+      <!-- Use your own source -->
+        <source 
+          src="https://natespain.github.io/bpc/Brio_10-Yr-Anniversary-Video_Website.webm" 
+          type="video/webm">
+        <source 
+          src="https://natespain.github.io/bpc/Brio_10-Yr-Anniversary-Video_Website_sm.mp4" 
+          type='video/mp4; codecs="hvc1"'>
+      <!-- Fallback text -->
+      Your browser does not support the HTML5 Video element.
+    </video>
+
+    <div class="video-overlay" aria-hidden="true">
+      <button
+        class="play-button"
+        type="button"
+        aria-label="Play video"
+        title="Play"
+      >
+        <span class="play-icon" aria-hidden="true"></span>
+      </button>
+    </div>
+  </div>
+
+  <script>
+    (function setupPlayableOverlay(wrapperId, videoId) {
+      const wrapper = document.getElementById(wrapperId);
+      const video = document.getElementById(videoId);
+      const playBtn = wrapper.querySelector('.play-button');
+
+      if (!wrapper || !video || !playBtn) return;
+
+      // Utility: update wrapper state based on video
+      function updateState() {
+        if (!video.paused && !video.ended) {
+          wrapper.classList.add('is-playing');
+        } else {
+          wrapper.classList.remove('is-playing');
+        }
+      }
+
+      // Click or keyboard on the overlay starts playback
+      function startPlayback() {
+        // Attempt to play - browsers may block without user gesture
+        const playPromise = video.play();
+        if (playPromise && typeof playPromise.then === 'function') {
+          playPromise.catch(() => {
+            // If autoplay is blocked or an error occurs, keep overlay visible.
+            // You could show a message or retry on user interaction.
+          });
+        }
+      }
+
+      playBtn.addEventListener('click', startPlayback);
+      playBtn.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          startPlayback();
+        }
+      });
+
+      // Sync overlay visibility with video events
+      video.addEventListener('play', updateState);
+      video.addEventListener('pause', updateState);
+      video.addEventListener('ended', updateState);
+      video.addEventListener('loadeddata', updateState);
+
+      // Optional: clicking the video pauses/plays natively; keep overlay in sync
+      video.addEventListener('click', () => {
+        if (video.paused) {
+          startPlayback();
+        } else {
+          video.pause();
+        }
+      });
+
+      // Initialize
+      updateState();
+    })('myVideoWrapper', 'myVideo');
+  </script>
+</body>
+</html>
