@@ -1,0 +1,100 @@
+<style>
+
+@media only screen and (max-width: 1200px) and (min-width: 991px)  {
+
+/* Navbar Updates */
+
+.navbar9_logo { 
+	width: 75%!important; 
+}
+.button_nav {
+	min-width: 0!important;
+  width: 90px!important;
+  font-size: 0.6rem!important;
+}
+.navbar9_link {
+	font-size: 0.65rem!important;
+}
+.text-block-2.navbar-dropdown-text {
+	font-size: 0.65rem!important;
+}
+
+/* Video Page Embed Styles */
+
+/* Container positions overlay above the video */
+.video-wrapper {
+  position: relative;
+  display: inline-block; /* shrink to video size */
+  line-height: 0;        /* remove gaps from inline-block */
+}
+
+.video-wrapper video {
+  display: block;
+  width: 640px;   /* set to your desired size or 100% */
+  height: auto;
+  background: #000; /* nice black background while loading */
+}
+
+/* Overlay covers the whole video area */
+.video-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none; /* only the button itself is clickable */
+}
+
+/* The circular button */
+.play-button {
+  pointer-events: auto;
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(1px);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 120ms ease, background 120ms ease;
+  border: 1px solid rgba(255,255,255,0.25);
+  outline: none;
+}
+
+.play-button:hover {
+  transform: scale(1.04);
+  background: rgba(0, 0, 0, 0.7);
+}
+
+.play-button:active {
+  transform: scale(0.98);
+}
+
+.play-button:focus-visible {
+  box-shadow: 0 0 0 3px rgba(0, 153, 255, 0.7);
+}
+
+/* The triangular "play" icon (CSS-only) */
+.play-icon {
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 16px 0 16px 28px; /* height: 32px, width: 28px */
+  border-color: transparent transparent transparent white;
+  margin-left: 4px; /* optical centering */
+}
+
+/* Hide overlay while playing */
+.video-wrapper.is-playing .video-overlay {
+  display: none;
+}
+
+/* Optional: hide native controls until playing (customizable) */
+.video-wrapper:not(.is-playing) video::-webkit-media-controls {
+  display: none !important;
+}
+.video-wrapper:not(.is-playing) video {
+  /* If you always want native controls visible, remove this block */
+}
+  </style>
